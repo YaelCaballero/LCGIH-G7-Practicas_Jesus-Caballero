@@ -1,6 +1,6 @@
-\# Prácticas de laboratorio Computación gráfica
+# Prácticas de laboratorio Computación gráfica
 
-\## Facultad de Ingeniería, UNAM
+## Facultad de Ingeniería, UNAM
 
-\## LCGIH Gpo. 7 Caballero Antunez Jesús Yael
+## LCGIH Gpo. 7 Caballero Antunez Jesús Yael
 
