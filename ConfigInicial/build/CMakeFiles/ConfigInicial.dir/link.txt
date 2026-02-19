@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/ConfigInicial.dir/link.d CMakeFiles/ConfigInicial.dir/Main_P3.cpp.o -o ConfigInicial  /usr/lib/libglfw.so.3.4 /usr/lib/libGLEW.so /usr/lib/libGL.so

@@ -1,0 +1,3 @@
+/home/yaelo/8sem/LCGIH/LCGIH-G7-Practicas_Jesus-Caballero/ConfigInicial/build/CMakeFiles/ConfigInicial.dir
+/home/yaelo/8sem/LCGIH/LCGIH-G7-Practicas_Jesus-Caballero/ConfigInicial/build/CMakeFiles/edit_cache.dir
+/home/yaelo/8sem/LCGIH/LCGIH-G7-Practicas_Jesus-Caballero/ConfigInicial/build/CMakeFiles/rebuild_cache.dir
