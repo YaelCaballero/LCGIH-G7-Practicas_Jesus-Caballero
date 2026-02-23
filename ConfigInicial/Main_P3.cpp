@@ -1,7 +1,10 @@
-// Caballero Antunez Jesús Yael - 320231364
+// Caballero Antunez Jesus Yael - 320231364
 // Practica #3: Proyecciones, transformaciones y Shaders
 // 22 de febrero del 2026
 
+#include <cmath>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/trigonometric.hpp>
 #include <iostream>
 
 // #define GLEW_STATIC
@@ -21,7 +24,7 @@ const GLint WIDTH = 800, HEIGHT = 600;
 
 int main() {
   glfwInit();
-  // Verificaci�n de compatibilidad
+  // Verificacion de compatibilidad
   //  Set all the required options for GLFW
   // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -31,13 +34,13 @@ int main() {
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
   GLFWwindow *window = glfwCreateWindow(
-      WIDTH, HEIGHT, "Previo 3 Jesús Caballero", nullptr, nullptr);
+      WIDTH, HEIGHT, "Práctica 3 Jesús Caballero", nullptr, nullptr);
 
   int screenWidth, screenHeight;
 
   glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
 
-  // Verificaci�n de errores de creacion  ventana
+  // Verificacion de errores de creacion ventana
   if (nullptr == window) {
     std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -48,7 +51,7 @@ int main() {
   glfwMakeContextCurrent(window);
   glewExperimental = GL_TRUE;
 
-  // Verificaci�n de errores de inicializaci�n de glew
+  // Verificacion de errores de inicializacion de glew
 
   GLenum err = glewInit();
   if (GLEW_OK != err && err != 4) {
@@ -125,233 +128,35 @@ int main() {
 
   // use with Perspective Projection
   float vertices[] = {
-      // Frente - Rojo
-      -0.5f,
-      -0.5f,
-      0.5f,
-      1.0f,
-      0.0f,
-      0.0f, //
-      0.5f,
-      -0.5f,
-      0.5f,
-      1.0f,
-      0.0f,
-      0.0f, //
-      0.5f,
-      0.5f,
-      0.5f,
-      1.0f,
-      0.0f,
-      0.0f, //
-      0.5f,
-      0.5f,
-      0.5f,
-      1.0f,
-      0.0f,
-      0.0f, //
-      -0.5f,
-      0.5f,
-      0.5f,
-      1.0f,
-      0.0f,
-      0.0f, //
-      -0.5f,
-      -0.5f,
-      0.5f,
-      1.0f,
-      0.0f,
-      0.0f, //
+      -0.5f, -0.5f, 0.5f,  1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, 0.5f,
+      1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  -0.5f, 0.5f,  0.5f,
+      1.0f,  0.0f,  0.0f,  -0.5f, -0.5f, 0.5f,  1.0f,  0.0f,  0.0f,
 
-      // Fondo - Verde
-      -0.5f,
-      -0.5f,
-      -0.5f,
-      0.0f,
-      1.0f,
-      0.0f, //
-      0.5f,
-      -0.5f,
-      -0.5f,
-      0.0f,
-      1.0f,
-      0.0f, //
-      0.5f,
-      0.5f,
-      -0.5f,
-      0.0f,
-      1.0f,
-      0.0f, //
-      0.5f,
-      0.5f,
-      -0.5f,
-      0.0f,
-      1.0f,
-      0.0f, //
-      -0.5f,
-      0.5f,
-      -0.5f,
-      0.0f,
-      1.0f,
-      0.0f, //
-      -0.5f,
-      -0.5f,
-      -0.5f,
-      0.0f,
-      1.0f,
-      0.0f, //
+      -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,  0.0f,  0.5f,  -0.5f, -0.5f,
+      0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  -0.5f,
+      0.0f,  1.0f,  0.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,  0.0f,
 
-      // Derecha - Azul
-      0.5f,
-      -0.5f,
-      0.5f,
-      0.0f,
-      0.0f,
-      1.0f, //
-      0.5f,
-      -0.5f,
-      -0.5f,
-      0.0f,
-      0.0f,
-      1.0f, //
-      0.5f,
-      0.5f,
-      -0.5f,
-      0.0f,
-      0.0f,
-      1.0f, //
-      0.5f,
-      0.5f,
-      -0.5f,
-      0.0f,
-      0.0f,
-      1.0f, //
-      0.5f,
-      0.5f,
-      0.5f,
-      0.0f,
-      0.0f,
-      1.0f, //
-      0.5f,
-      -0.5f,
-      0.5f,
-      0.0f,
-      0.0f,
-      1.0f, //
+      0.5f,  -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f, -0.5f,
+      0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  1.0f,
+      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f,
+      0.0f,  0.0f,  1.0f,  0.5f,  -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,
 
-      // Arriba - Magenta
-      -0.5f,
-      0.5f,
-      0.5f,
-      1.0f,
-      1.0f,
-      0.0f, //
-      -0.5f,
-      0.5f,
-      -0.5f,
-      1.0f,
-      1.0f,
-      0.0f, //
-      -0.5f,
-      -0.5f,
-      -0.5f,
-      1.0f,
-      1.0f,
-      0.0f, //
-      -0.5f,
-      -0.5f,
-      -0.5f,
-      1.0f,
-      1.0f,
-      0.0f, //
-      -0.5f,
-      -0.5f,
-      0.5f,
-      1.0f,
-      1.0f,
-      0.0f, //
-      -0.5f,
-      0.5f,
-      0.5f,
-      1.0f,
-      1.0f,
-      0.0f, //
+      -0.5f, 0.5f,  0.5f,  1.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  -0.5f,
+      1.0f,  1.0f,  0.0f,  -0.5f, -0.5f, -0.5f, 1.0f,  1.0f,  0.0f,
+      -0.5f, -0.5f, -0.5f, 1.0f,  1.0f,  0.0f,  -0.5f, -0.5f, 0.5f,
+      1.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  1.0f,  1.0f,  0.0f,
 
-      // Abajo - Cian
-      -0.5f,
-      -0.5f,
-      -0.5f,
-      0.0f,
-      1.0f,
-      1.0f, //
-      0.5f,
-      -0.5f,
-      -0.5f,
-      0.0f,
-      1.0f,
-      1.0f, //
-      0.5f,
-      -0.5f,
-      0.5f,
-      0.0f,
-      1.0f,
-      1.0f, //
-      0.5f,
-      -0.5f,
-      0.5f,
-      0.0f,
-      1.0f,
-      1.0f, //
-      -0.5f,
-      -0.5f,
-      0.5f,
-      0.0f,
-      1.0f,
-      1.0f, //
-      -0.5f,
-      -0.5f,
-      -0.5f,
-      0.0f,
-      1.0f,
-      1.0f, //
+      -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,  1.0f,  0.5f,  -0.5f, -0.5f,
+      0.0f,  1.0f,  1.0f,  0.5f,  -0.5f, 0.5f,  0.0f,  1.0f,  1.0f,
+      0.5f,  -0.5f, 0.5f,  0.0f,  1.0f,  1.0f,  -0.5f, -0.5f, 0.5f,
+      0.0f,  1.0f,  1.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,  1.0f,
 
-      // Izquierda - Amarillo
-      -0.5f,
-      0.5f,
-      -0.5f,
-      1.0f,
-      0.2f,
-      0.5f, //
-      0.5f,
-      0.5f,
-      -0.5f,
-      1.0f,
-      0.2f,
-      0.5f, //
-      0.5f,
-      0.5f,
-      0.5f,
-      1.0f,
-      0.2f,
-      0.5f, //
-      0.5f,
-      0.5f,
-      0.5f,
-      1.0f,
-      0.2f,
-      0.5f, //
-      -0.5f,
-      0.5f,
-      0.5f,
-      1.0f,
-      0.2f,
-      0.5f, //
-      -0.5f,
-      0.5f,
-      -0.5f,
-      1.0f,
-      0.2f,
-      0.5f, //
+      -0.5f, 0.5f,  -0.5f, 1.0f,  0.2f,  0.5f,  0.5f,  0.5f,  -0.5f,
+      1.0f,  0.2f,  0.5f,  0.5f,  0.5f,  0.5f,  1.0f,  0.2f,  0.5f,
+      0.5f,  0.5f,  0.5f,  1.0f,  0.2f,  0.5f,  -0.5f, 0.5f,  0.5f,
+      1.0f,  0.2f,  0.5f,  -0.5f, 0.5f,  -0.5f, 1.0f,  0.2f,  0.5f,
   };
 
   GLuint VBO, VAO;
@@ -415,21 +220,34 @@ int main() {
     GLint viewLoc = glGetUniformLocation(ourShader.Program, "view");
     GLint projecLoc = glGetUniformLocation(ourShader.Program, "projection");
 
-    // Generarción de la vista
+    // Generarcion de la vista
     glm::mat4 view = glm::mat4(1);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -7.5f));
-    view = glm::rotate(view , glm::radians(180.0f),
-                        glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
+
+    // view = glm::rotate(view, glm::radians(90.0f),
+    //                    glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f)));
+    // view = glm::rotate(view, glm::radians(60.0f),
+    //                    glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
 
     // Primer cubo
     glm::mat4 model = glm::mat4(1);
 
-    model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
+    glm::vec3 c1_pos, c1_dim;
+
+    c1_dim.x = 1.5f;
+    c1_dim.y = 0.75f;
+    c1_dim.z = 3.0f;
+
+    c1_pos.x = 0.0f;
+    c1_pos.y = -2.5f;
+    c1_pos.z = 0.0f;
+
+    model = glm::translate(model, c1_pos);
 
     model = glm::rotate(model, glm::radians(20.0f),
                         glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f)));
 
-    model = glm::scale(model, glm::vec3(1.5f, 0.75f, 3.0f));
+    model = glm::scale(model, c1_dim);
 
     glUniformMatrix4fv(projecLoc, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
@@ -440,14 +258,24 @@ int main() {
     // Segundo cubo
     model = glm::mat4(1);
 
-    model = glm::translate(model, glm::vec3(0.7f, -1.375f, -0.5f));
+    glm::vec3 c2_pos, c2_dim;
+
+    c2_dim.x = 1.5f;
+    c2_dim.y = 0.5f;
+    c2_dim.z = 2.5f;
+
+    c2_pos.x = 0.7f;
+    c2_pos.y = (c2_dim.y + c1_dim.y) / 2 + c1_pos.y;
+    c2_pos.z = -0.5f;
+
+    model = glm::translate(model, c2_pos);
 
     model = glm::rotate(model, glm::radians(180.0f),
                         glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f)));
     model = glm::rotate(model, glm::radians(70.0f),
                         glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
 
-    model = glm::scale(model, glm::vec3(1.5f, 0.5f, 2.5f));
+    model = glm::scale(model, c2_dim);
 
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -455,37 +283,115 @@ int main() {
     // Tercer cubo
     model = glm::mat4(1);
 
-    model = glm::translate(model, glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::vec3 c3_pos, c3_dim;
 
-    model = glm::rotate(model, glm::radians(45.0f),
-                        glm::normalize(glm::vec3(-1.0f, 0.0f, 0.0f)));
+    c3_dim.x = 3.0f;
+    c3_dim.y = 0.3f;
+    c3_dim.z = 0.5f;
 
-    // model = glm::scale(model, glm::vec3(1.5f, 1.0f, 1.7f));
+    c3_pos.x = 1.5f;
+    c3_pos.y = c3_dim.x / 2 + c2_dim.y / 2 + c2_pos.y;
+    c3_pos.z = -0.35f;
 
-    // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    // glDrawArrays(GL_TRIANGLES, 0, 36);
+    model = glm::translate(model, c3_pos);
+
+    model = glm::rotate(model, glm::radians(170.0f),
+                        glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f)));
+    model = glm::rotate(model, glm::radians(90.0f),
+                        glm::normalize(glm::vec3(0.0f, 0.0f, -1.0f)));
+
+    model = glm::scale(model, c3_dim);
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // Cuarto cubo
-    // model = glm::mat4(1);
+    model = glm::mat4(1);
 
-    // model = glm::translate(model, glm::vec3(5.0f, 0.0f, -2.0f));
-    // model = glm::rotate(model, glm::radians(60.0f),
-    //                     glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
-    // model = glm::scale(model, glm::vec3(1.5f, 1.0f, 1.7f));
+    glm::vec3 c4_pos, c4_dim;
 
-    // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    // glDrawArrays(GL_TRIANGLES, 0, 36);
+    c4_dim.x = 0.6f;
+    c4_dim.y = 3.5f;
+    c4_dim.z = 0.4f;
+
+    float mag =
+        sqrt(pow(c1_dim.x - c4_dim.z, 2) + pow(c1_dim.z - c4_dim.x, 2)) / 2;
+    float angle =
+        atan2(c1_dim.x - c4_dim.z, c1_dim.z - c4_dim.x) + glm::radians(20.0f);
+
+    c4_pos.x = -mag * sin(angle);
+    c4_pos.y = (c4_dim.y + c1_dim.y) / 2 + c1_pos.y;
+    c4_pos.z = mag * cos(angle);
+
+    model = glm::translate(model, c4_pos);
+
+    model = glm::rotate(model, glm::radians(200.0f),
+                        glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f)));
+    model = glm::rotate(model, glm::radians(180.0f),
+                        glm::normalize(glm::vec3(-1.0f, 0.0f, -1.0f)));
+
+    model = glm::scale(model, c4_dim);
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // Quinto cubo
-    // model = glm::mat4(1);
+    model = glm::mat4(1);
 
-    // model = glm::translate(model, glm::vec3(5.0f, 0.0f, -2.0f));
-    // model = glm::rotate(model, glm::radians(60.0f),
-    //                     glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)));
-    // model = glm::scale(model, glm::vec3(1.5f, 1.0f, 1.7f));
+    glm::vec3 c5_pos, c5_dim;
 
-    // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    // glDrawArrays(GL_TRIANGLES, 0, 36);
+    c5_dim.x = 2.5f;
+    c5_dim.y =
+        sqrt(pow(c4_pos.x - c3_pos.x, 2) + pow(c4_pos.z - c3_pos.z, 2)) + 1;
+    c5_dim.z = 0.1f;
+
+    c5_pos.x = (c4_pos.x + c3_pos.x) / 2;
+    c5_pos.y = (c5_dim.z + c3_dim.x) / 2 + c3_pos.y;
+    c5_pos.z = (c4_pos.z + c3_pos.z) / 2;
+
+    angle =
+        atan2(c4_pos.x - c3_pos.x, c4_pos.z - c3_pos.z) + glm::radians(180.0f);
+
+    model = glm::translate(model, c5_pos);
+
+    model =
+        glm::rotate(model, angle, glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
+    model = glm::rotate(model, glm::radians(90.0f),
+                        glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f)));
+
+    model = glm::scale(model, c5_dim);
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // Sexto cubo
+    model = glm::mat4(1);
+
+    glm::vec3 c6_pos, c6_dim;
+
+    c6_dim.x = 1.0f;
+    c6_dim.y = 1.0f;
+    c6_dim.z = 1.0f;
+
+    float diag = sqrt(pow(c6_dim.x, 2) + pow(c6_dim.y, 2) + pow(c6_dim.z, 2));
+
+    c6_pos.x = -0.6f;
+    c6_pos.y = (diag + c5_dim.z) / 2 + c5_pos.y;
+    c6_pos.z = 0.8f;
+
+    model = glm::translate(model, c6_pos);
+
+    model = glm::rotate(model, glm::radians(45.0f),
+                        glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f)));
+    model = glm::rotate(model, glm::radians(45.0f),
+                        glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)));
+    model = glm::rotate(model, glm::radians(90.0f),
+                        glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f)));
+
+    model = glm::scale(model, c6_dim);
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glBindVertexArray(0);
 
