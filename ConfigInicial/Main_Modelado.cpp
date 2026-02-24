@@ -1,3 +1,8 @@
+// Caballero Antunez Jesus Yael - 320231364
+// Practica #4: Modelado Geométrico 
+// 24 de febrero del 2026
+
+#include <cmath>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <iostream>
@@ -161,19 +166,66 @@ int main() {
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
     glBindVertexArray(VAO);
+
+    // Losa
     model = glm::mat4(1.0f);
     glm::vec3 losa_dim, pata_dim;
 
     losa_dim = glm::vec3(4.0f, 0.2f, 2.0f);
     pata_dim = glm::vec3(0.2f, 1.0f, 0.2f);
 
-    model = glm::scale(model, losa_dim);
-
     model = glm::translate(model,
                            glm::vec3(0.0f, losa_dim.y / 2 + pata_dim.y, 0.0f));
+    model = glm::scale(model, losa_dim);
 
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // Pata 1
+    model = glm::mat4(1.0f);
+
+    float mag = std::sqrt(pow(-losa_dim.z + pata_dim.z, 2) +
+                          pow(losa_dim.x - pata_dim.x, 2)) /
+                2;
+    float ang = atan2(-losa_dim.z + pata_dim.z, losa_dim.x - pata_dim.x);
+
+    model = glm::translate(
+        model, glm::vec3(mag * cos(ang), pata_dim.y / 2, mag * sin(ang)));
+    model = glm::scale(model, pata_dim);
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // Pata 2
+    model = glm::mat4(1.0f);
+
+    model = glm::translate(
+        model, glm::vec3(-mag * cos(ang), pata_dim.y / 2, mag * sin(ang)));
+    model = glm::scale(model, pata_dim);
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // Pata 3
+    model = glm::mat4(1.0f);
+
+    model = glm::translate(
+        model, glm::vec3(-mag * cos(ang), pata_dim.y / 2, -mag * sin(ang)));
+    model = glm::scale(model, pata_dim);
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    // Pata 4
+    model = glm::mat4(1.0f);
+
+    model = glm::translate(
+        model, glm::vec3(mag * cos(ang), pata_dim.y / 2, -mag * sin(ang)));
+    model = glm::scale(model, pata_dim);
+
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
     glBindVertexArray(0);
 
     glfwSwapBuffers(window);
@@ -191,17 +243,17 @@ void Inputs(GLFWwindow *window) {
   if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
     glfwSetWindowShouldClose(window, true);
   if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    movX += 0.08f;
-  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     movX -= 0.08f;
-  if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
-    movY += 0.08f;
-  if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    movX += 0.08f;
+  if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     movY -= 0.08f;
+  if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    movY += 0.08f;
   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    movZ -= 0.08f;
-  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     movZ += 0.08f;
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    movZ -= 0.08f;
   if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     rot += 0.4f;
   if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
