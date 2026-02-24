@@ -10,7 +10,7 @@ find_package(glfw3 3.3 REQUIRED)
 find_package(GLEW REQUIRED)
 
 add_executable(ConfigInicial
-    Main_P3.cpp
+    Main_Modelado.cpp
 )
 
 target_link_libraries(ConfigInicial
