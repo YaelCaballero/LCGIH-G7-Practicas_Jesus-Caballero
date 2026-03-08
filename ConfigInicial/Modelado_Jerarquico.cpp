@@ -1,6 +1,6 @@
 // Caballero Antunez Jesus Yael - 320231364
-// Previo #5: Modelado Jerárquico
-// 3 de marzo del 2026
+// Práctica #5: Modelado Jerárquico
+// 8 de marzo del 2026
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -16,6 +16,7 @@
 #include "Shader.h"
 
 void Inputs(GLFWwindow *window);
+glm::vec3 GrayScale(glm::vec3 RGB);
 
 const GLint WIDTH = 1200, HEIGHT = 800;
 
@@ -26,8 +27,10 @@ float movX = 0.0f, movY = 0.0f, movZ = -5.0f, rot = 0.0f;
 float hombro = 0.0f;
 float codo = 0.0f;
 float muneca = 0.0f;
-float dedo1 = 80.0f;
-float dedo2 = 0.0f;
+float total = 0.0f;
+float interfal1 = 80.0f;
+float interfal2 = 0.0f;
+float interfal3 = 0.0f;
 
 int main() {
   glfwInit();
@@ -41,7 +44,7 @@ int main() {
   glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
   GLFWwindow *window = glfwCreateWindow(
-      WIDTH, HEIGHT, "Previo 5 Jesús Caballero", nullptr, nullptr);
+      WIDTH, HEIGHT, "Práctica 5 Jesús Caballero", nullptr, nullptr);
 
   int screenWidth, screenHeight;
 
@@ -131,7 +134,7 @@ int main() {
   projection = glm::perspective(
       glm::radians(45.0f), (GLfloat)screenWidth / (GLfloat)screenHeight, 0.1f,
       100.0f); // FOV, Radio de aspecto,znear,zfar
-  glm::vec3 color = glm::vec3(0.0f, 0.0f, 1.0f);
+  glm::vec3 color = glm::vec3(0.0f, 0.0f, 0.1f);
   while (!glfwWindowShouldClose(window)) {
 
     Inputs(window);
@@ -171,20 +174,20 @@ int main() {
                         glm::vec3(0.0f, 0.0, 1.0f)); // hombro
     modelTemp = model = glm::translate(model, glm::vec3(1.5f, 0.0f, 0.0f));
     model = glm::scale(model, glm::vec3(3.0f, 1.0f, 1.0f));
-    color = glm::vec3(0.0f, 1.0f, 0.0f);
+    color = GrayScale(glm::vec3(0.0f, 0.0f, 0.0f));
     glUniform3fv(uniformColor, 1, glm::value_ptr(color));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glDrawArrays(GL_TRIANGLES, 0, 36); // A
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // Model  Antebrazo
     model = glm::translate(modelTemp, glm::vec3(1.5f, 0.0f, 0.0f));
     model = glm::rotate(model, glm::radians(codo), glm::vec3(0.0f, 1.0f, 0.0f));
     modelTemp = model = glm::translate(model, glm::vec3(1.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(2.0f, 1.0f, 1.0f));
-    color = glm::vec3(1.0f, 0.0f, 0.0f);
+    model = glm::scale(model, glm::vec3(2.0f, 0.8f, 0.8f));
+    color = GrayScale(color);
     glUniform3fv(uniformColor, 1, glm::value_ptr(color));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glDrawArrays(GL_TRIANGLES, 0, 36); // B
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     // Model  Palma
     model = glm::translate(modelTemp, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -193,36 +196,56 @@ int main() {
     modelTemp2 = modelTemp = model =
         glm::translate(model, glm::vec3(0.25f, 0.0f, 0.0f));
     model = glm::scale(model, glm::vec3(0.5f, 1.5f, 1.5f));
-    color = glm::vec3(1.0f, 1.0f, 1.0f);
+    color = GrayScale(color);
     glUniform3fv(uniformColor, 1, glm::value_ptr(color));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glDrawArrays(GL_TRIANGLES, 0, 36); // C
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     int dedos = 5;
 
+    glm::vec3 fprox_dim = glm::vec3(1.0f, 0.3f, 0.25f);
+    glm::vec3 fmed_dim = fprox_dim * 0.7f;
+    glm::vec3 fdis_dim = fmed_dim * 0.7f;
+
     for (int i = 0; i < dedos; i++) {
+      glm::vec3 colorTemp = color;
+
+      // Falange proximal
       model = glm::translate(modelTemp, glm::vec3(0.25f, 0.0f, 0.0f));
       model = glm::rotate(model, glm::radians(i * 360.0f / dedos),
                           glm::vec3(-1.0f, 0.0f, 0.0f));
       model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
-      model =
-          glm::rotate(model, glm::radians(dedo1), glm::vec3(0.0f, 0.0f, 1.0f));
+      model = glm::rotate(model, glm::radians(interfal1),
+                          glm::vec3(0.0f, 0.0f, 1.0f));
       modelTemp = model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
-      model = glm::scale(model, glm::vec3(1.0f, 0.3f, 0.25f));
-      color = glm::vec3(0.0f, 1.0f, 1.0f);
-      glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+      model = glm::scale(model, fprox_dim);
+      colorTemp = GrayScale(colorTemp);
+      glUniform3fv(uniformColor, 1, glm::value_ptr(colorTemp));
       glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-      glDrawArrays(GL_TRIANGLES, 0, 36); // D
+      glDrawArrays(GL_TRIANGLES, 0, 36);
 
-      model = glm::translate(modelTemp, glm::vec3(0.5f, 0.0f, 0.0f));
-      model =
-          glm::rotate(model, glm::radians(dedo2), glm::vec3(0.0f, 0.0f, 1.0f));
-      model = glm::translate(model, glm::vec3(0.5f, 0.0f, 0.0f));
-      model = glm::scale(model, glm::vec3(1.0f, 0.3f, 0.25f));
-      color = glm::vec3(1.0f, 0.0f, 1.0f);
-      glUniform3fv(uniformColor, 1, glm::value_ptr(color));
+      // Falange media
+      model = glm::translate(modelTemp, glm::vec3(fprox_dim.x / 2, 0.0f, 0.0f));
+      model = glm::rotate(model, glm::radians(interfal2),
+                          glm::vec3(0.0f, 0.0f, 1.0f));
+      modelTemp = model =
+          glm::translate(model, glm::vec3(fmed_dim.x / 2, 0.0f, 0.0f));
+      model = glm::scale(model, fmed_dim);
+      colorTemp = GrayScale(colorTemp);
+      glUniform3fv(uniformColor, 1, glm::value_ptr(colorTemp));
       glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-      glDrawArrays(GL_TRIANGLES, 0, 36); // E
+      glDrawArrays(GL_TRIANGLES, 0, 36);
+
+      // Falange distal
+      model = glm::translate(modelTemp, glm::vec3(fmed_dim.x / 2, 0.0f, 0.0f));
+      model = glm::rotate(model, glm::radians(interfal3),
+                          glm::vec3(0.0f, 0.0f, 1.0f));
+      model = glm::translate(model, glm::vec3(fdis_dim.x / 2, 0.0f, 0.0f));
+      model = glm::scale(model, fdis_dim);
+      colorTemp = GrayScale(colorTemp);
+      glUniform3fv(uniformColor, 1, glm::value_ptr(colorTemp));
+      glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+      glDrawArrays(GL_TRIANGLES, 0, 36);
 
       modelTemp = model = modelTemp2;
     }
@@ -240,6 +263,16 @@ int main() {
 }
 
 void Inputs(GLFWwindow *window) {
+  float slim_if1 = 80.0f;
+  float slim_if2 = 0.0f;
+  float slim_if3 = 0.0f;
+
+  float ilim_if1 = 20.0f;
+  float ilim_if2 = -45.0f;
+  float ilim_if3 = -40.0f;
+
+  float velocidad = 0.01f;
+
   // if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) // GLFW_RELEASE
   if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) // GLFW_RELEASE
     glfwSetWindowShouldClose(window, true);
@@ -271,12 +304,45 @@ void Inputs(GLFWwindow *window) {
     muneca += 0.18f;
   if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
     muneca -= 0.18f;
-  if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-    dedo1 += 0.18f;
-  if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
-    dedo1 -= 0.18f;
-  if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS)
-    dedo2 += 0.18f;
-  if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS)
-    dedo2 -= 0.18f;
+  if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) {
+    interfal1 = interfal1 - (slim_if1 - ilim_if1) * velocidad >= ilim_if1
+                    ? interfal1 - (slim_if1 - ilim_if1) * velocidad
+                    : ilim_if1;
+    interfal2 = interfal2 - (slim_if2 - ilim_if2) * velocidad >= ilim_if2
+                    ? interfal2 - (slim_if2 - ilim_if2) * velocidad
+                    : ilim_if2;
+    interfal3 = interfal3 - (slim_if3 - ilim_if3) * velocidad >= ilim_if3
+                    ? interfal3 - (slim_if3 - ilim_if3) * velocidad
+                    : ilim_if3;
+  }
+  if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+    interfal1 = interfal1 + (slim_if1 - ilim_if1) * velocidad <= slim_if1
+                    ? interfal1 + (slim_if1 - ilim_if1) * velocidad
+                    : slim_if1;
+    interfal2 = interfal2 + (slim_if2 - ilim_if2) * velocidad <= slim_if2
+                    ? interfal2 + (slim_if2 - ilim_if2) * velocidad
+                    : slim_if2;
+    interfal3 = interfal3 + (slim_if3 - ilim_if3) * velocidad <= slim_if3
+                    ? interfal3 + (slim_if3 - ilim_if3) * velocidad
+                    : slim_if3;
+  }
+}
+
+glm::vec3 GrayScale(glm::vec3 RGB) {
+  float r = RGB.x;
+  float g = RGB.y;
+  float b = RGB.z;
+
+  if (r == 0.0f && g == 0.0f && b == 0.0f) {
+    r = 0.3f;
+    g = 0.3f;
+    b = 0.3f;
+  } else {
+    r += 0.09f;
+    g += 0.09f;
+    b += 0.09f;
+  }
+
+  glm::vec3 color = glm::vec3(r, g, b);
+  return color;
 }
