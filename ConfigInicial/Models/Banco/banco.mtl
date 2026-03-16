@@ -1,0 +1,22 @@
+# Blender 4.5.3 LTS MTL File: 'Zara Home - The wood stool (max2017).max.blend'
+# www.blender.org
+
+newmtl Material_25
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.400000
+d 1.000000
+illum 2
+map_Kd Textures/Wood_Oak_2_d.jpg
+map_Ns Textures/Wood_Oak_2_b.png
+norm Textures/Wood_Oak_2_n.png
+
+newmtl Rubber
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.019608 0.019608 0.019608
+Ks 0.500000 0.500000 0.500000
+d 1.000000
+illum 2
+map_Kd Textures/Rubber_bump.jpg

@@ -1,0 +1,43 @@
+# Blender 5.0.1 MTL File: 'None'
+# www.blender.org
+
+newmtl Leafe_dead
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Textures/Green_jk1.jpg
+
+newmtl concret
+Ns 200.000000
+Ka 0.523810 0.523810 0.523810
+Ks 0.464108 0.464108 0.464108
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd Textures/Dirt_jk11.jpg
+
+newmtl ground
+Ns 7.958707
+Ka 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Textures/Graunt__basecolor.jpg
+map_Ks Textures/Graunt__roughness.jpg
+map_Bump -bm 0.010000 Textures/Graunt__normal.jpg
+
+newmtl leafe_1
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd Textures/Green_jk3.jpg
