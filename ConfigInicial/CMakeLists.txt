@@ -14,7 +14,7 @@ find_package(assimp REQUIRED)
 find_package(soil2 REQUIRED)
 
 add_executable(ConfigInicial
-    Carga_de_Modelos.cpp
+    Texturizado.cpp
 )
 
 target_link_libraries(ConfigInicial
