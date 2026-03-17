@@ -104,19 +104,19 @@ int main() {
 
       -0.5f, -0.5f, 0.0f, // Position
       1.0f,  1.0f,  1.0f, // Color
-      0.5f,  0.0f,        // Texture Coord
+      0.0f,  0.0f,        // Texture Coord
 
       0.5f,  -0.5f, 0.0f, // Position
       1.0f,  1.0f,  1.0f, // Color
-      2.5f,  0.0f,        // Texture Coord
+      1.0f,  0.0f,        // Texture Coord
 
       0.5f,  0.5f,  0.0f, // Position
       1.0f,  1.0f,  1.0f, // Color
-      2.5f,  2.5f,        // Texture Coord
+      1.0f,  1.0f,        // Texture Coord
 
       -0.5f, 0.5f,  0.0f, // Position
       1.0f,  1.0f,  1.0f, // Color
-      0.5f,  2.5f,        // Texture Coord
+      0.0f,  1.0f,        // Texture Coord
 
   };
 
@@ -165,15 +165,15 @@ int main() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                   GL_NEAREST_MIPMAP_NEAREST);
   // Diffuse map
-  image = stbi_load("images/checker_Tex.png", &textureWidth, &textureHeight,
+  image = stbi_load("images/window.png", &textureWidth, &textureHeight,
                     &nrChannels, 0);
   glBindTexture(GL_TEXTURE_2D, texture1);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB,
-               GL_UNSIGNED_BYTE, image);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0,
+               GL_RGBA, GL_UNSIGNED_BYTE, image);
   glGenerateMipmap(GL_TEXTURE_2D);
   if (image) {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, image);
     glGenerateMipmap(GL_TEXTURE_2D);
   } else {
     std::cout << "Failed to load texture" << std::endl;
