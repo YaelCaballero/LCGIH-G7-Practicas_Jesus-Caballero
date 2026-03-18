@@ -101,23 +101,21 @@ int main() {
 
   // Set up vertex data (and buffer(s)) and attribute pointers
   GLfloat vertices[] = {
-
       -0.5f, -0.5f, 0.0f, // Position
       1.0f,  1.0f,  1.0f, // Color
-      0.0f,  0.0f,        // Texture Coord
+      0.5f,  0.5f,        // Texture Coord
 
       0.5f,  -0.5f, 0.0f, // Position
       1.0f,  1.0f,  1.0f, // Color
-      1.0f,  0.0f,        // Texture Coord
+      3.5f,  0.5f,        // Texture Coord
 
       0.5f,  0.5f,  0.0f, // Position
       1.0f,  1.0f,  1.0f, // Color
-      1.0f,  1.0f,        // Texture Coord
+      3.5f,  3.5f,        // Texture Coord
 
       -0.5f, 0.5f,  0.0f, // Position
       1.0f,  1.0f,  1.0f, // Color
-      0.0f,  1.0f,        // Texture Coord
-
+      0.5f,  3.5f,        // Texture Coord
   };
 
   GLuint indices[] = {// Note that we start from 0!
@@ -165,7 +163,7 @@ int main() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                   GL_NEAREST_MIPMAP_NEAREST);
   // Diffuse map
-  image = stbi_load("images/window.png", &textureWidth, &textureHeight,
+  image = stbi_load("images/arctic_monkeys.png", &textureWidth, &textureHeight,
                     &nrChannels, 0);
   glBindTexture(GL_TEXTURE_2D, texture1);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0,
