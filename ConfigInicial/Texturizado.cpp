@@ -60,7 +60,7 @@ int main() {
 
   // Create a GLFWwindow object that we can use for GLFW's functions
   GLFWwindow *window = glfwCreateWindow(
-      WIDTH, HEIGHT, "Previo 7 Jesús Caballero", nullptr, nullptr);
+      WIDTH, HEIGHT, "Práctica 7 Jesús Caballero", nullptr, nullptr);
 
   if (nullptr == window) {
     std::cout << "Failed to create GLFW window" << std::endl;
@@ -120,47 +120,47 @@ int main() {
 
   // Vertices en perspectiva del cubo
   float vertices[] = {
-      -0.5f, -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.0f,  0.25f, // Uno
-      0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.25f, 0.25f, //
-      0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.25f, 0.5f,  //
-      0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.25f, 0.5f,  //
-      -0.5f, 0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.0f,  0.5f,  //
+      -0.5f, -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.25f, 0.5f,  // Uno
+      0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.5f,  0.5f,  //
+      0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.5f,  0.75f, //
+      0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.5f,  0.75f, //
+      -0.5f, 0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.25f, 0.75f, //
+      -0.5f, -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.25f, 0.5f,  //
+
+      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.25f, 0.25f, // Seis
+      0.5f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.25f, //
+      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.0f,  //
+      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.0f,  //
+      -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.25f, 0.0f,  //
+      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.25f, 0.25f, //
+
+      0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.75f, 0.25f, // Dos
+      0.5f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.25f, //
+      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.0f,  //
+      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.0f,  //
+      0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.75f, 0.0f,  //
+      0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.75f, 0.25f, //
+
+      -0.5f, 0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.0f,  0.0f,  // Cinco
+      -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.25f, 0.0f,  //
+      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.25f, 0.25f, //
+      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.25f, 0.25f, //
       -0.5f, -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.0f,  0.25f, //
+      -0.5f, 0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.0f,  0.0f,  //
 
-      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.25f, // Tres
-      0.5f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.75f, 0.25f, //
-      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.75f, 0.5f,  //
-      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.75f, 0.5f,  //
-      -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.5f,  //
-      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.25f, //
-
-      0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.25f, 0.25f, // Dos
+      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.25f, 0.25f, // Tres
       0.5f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.25f, //
-      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.5f,  //
-      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.5f,  //
-      0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.25f, 0.5f,  //
-      0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.25f, 0.25f, //
+      0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.5f,  0.5f,  //
+      0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.5f,  0.5f,  //
+      -0.5f, -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.25f, 0.5f,  //
+      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.25f, 0.25f, //
 
-      -0.5f, 0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.75f, 0.25f, // Cuatro
-      -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,  0.25f, //
-      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,  0.5f,  //
-      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 1.0f,  0.5f,  //
-      -0.5f, -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.75f, 0.5f,  //
-      -0.5f, 0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.75f, 0.25f, //
-
-      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.75f, 0.25f, // Cinco
-      0.5f,  -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.25f, //
-      0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.5f,  0.0f,  //
-      0.5f,  -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.5f,  0.0f,  //
-      -0.5f, -0.5f, 0.5f,  1.0f, 1.0f, 1.0f, 0.75f, 0.0f,  //
-      -0.5f, -0.5f, -0.5f, 1.0f, 1.0f, 1.0f, 0.75f, 0.25f, //
-
-      -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.75f, 0.5f,  // Seis
-      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  0.5f,  //
+      -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.25f, 1.0f,  // Cuatro
+      0.5f,  0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.5f,  1.0f,  //
       0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.5f,  0.75f, //
       0.5f,  0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.5f,  0.75f, //
-      -0.5f, 0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.75f, 0.75f, //
-      -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.75f, 0.5f,  //
+      -0.5f, 0.5f,  0.5f,  1.0f, 1.0f, 1.0f, 0.25f, 0.75f, //
+      -0.5f, 0.5f,  -0.5f, 1.0f, 1.0f, 1.0f, 0.25f, 1.0f,  //
   };
 
   // GLuint indices[] = {// Note that we start from 0!
@@ -214,7 +214,7 @@ int main() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                   GL_NEAREST_MIPMAP_NEAREST);
   // Diffuse map
-  image = stbi_load("images/dado.png", &textureWidth, &textureHeight,
+  image = stbi_load("images/dado-2.png", &textureWidth, &textureHeight,
                     &nrChannels, 0);
   glBindTexture(GL_TEXTURE_2D, texture1);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0,
