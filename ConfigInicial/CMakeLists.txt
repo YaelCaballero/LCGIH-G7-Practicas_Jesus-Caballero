@@ -14,7 +14,7 @@ find_package(assimp REQUIRED)
 find_package(soil2 REQUIRED)
 
 add_executable(ConfigInicial
-    Texturizado.cpp
+    Iluminacion.cpp
 )
 
 target_link_libraries(ConfigInicial
