@@ -1,6 +1,6 @@
 // Caballero Antunez Jesus Yael - 320231364
 // Práctica #7: Texturizado
-// 17 de marzo del 2026
+// 22 de marzo del 2026
 
 #include <cmath>
 #include <iostream>
