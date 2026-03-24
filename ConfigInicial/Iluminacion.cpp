@@ -3,6 +3,9 @@
 // 24 de marzo del 2026
 
 // Std. Includes
+#include <glm/ext/matrix_float4x4.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/vector_float3.hpp>
 #include <string>
 
 // GLEW
@@ -60,7 +63,7 @@ int main() {
 
   // Create a GLFWwindow object that we can use for GLFW's functions
   GLFWwindow *window = glfwCreateWindow(
-      WIDTH, HEIGHT, "Materiales e Iluminacion", nullptr, nullptr);
+      WIDTH, HEIGHT, "Previo 8 Jesús Caballero", nullptr, nullptr);
 
   if (nullptr == window) {
     std::cout << "Failed to create GLFW window" << std::endl;
@@ -102,41 +105,55 @@ int main() {
   Shader lightingShader("Shader/lighting.vs", "Shader/lighting.frag");
 
   // Load models
-  Model red_dog((char *)"Models/RedDog.obj");
+  Model red_dog((char *)"Models/Perro/RedDog.obj");
+  Model pet_bed((char *)"Models/Cama/pet_bed.obj");
   glm::mat4 projection = glm::perspective(
       camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f,
       100.0f);
 
   float vertices[] = {
-      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.5f,  -0.5f, -0.5f,
-      0.0f,  0.0f,  -1.0f, 0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
-      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f, -0.5f, 0.5f,  -0.5f,
-      0.0f,  0.0f,  -1.0f, -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, //
+      0.5f,  -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, //
+      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f, //
+      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f, //
+      -0.5f, 0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f, //
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, //
 
-      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f, 0.5f,
-      0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  -0.5f, 0.5f,  0.5f,
-      0.0f,  0.0f,  1.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,
+      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f, //
+      0.5f,  -0.5f, 0.5f,  0.0f,  0.0f,  1.0f, //
+      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //
+      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //
+      -0.5f, 0.5f,  0.5f,  0.0f,  0.0f,  1.0f, //
+      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f, //
 
-      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,  -0.5f, 0.5f,  -0.5f,
-      -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,
-      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, 0.5f,
-      -1.0f, 0.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,
+      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f, //
+      -0.5f, 0.5f,  -0.5f, -1.0f, 0.0f,  0.0f, //
+      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f, //
+      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f, //
+      -0.5f, -0.5f, 0.5f,  -1.0f, 0.0f,  0.0f, //
+      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f, //
 
-      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  -0.5f,
-      1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
-      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, 0.5f,
-      1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //
+      0.5f,  0.5f,  -0.5f, 1.0f,  0.0f,  0.0f, //
+      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, //
+      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f, //
+      0.5f,  -0.5f, 0.5f,  1.0f,  0.0f,  0.0f, //
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f, //
 
-      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, -0.5f,
-      0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
-      0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,  -0.5f, -0.5f, 0.5f,
-      0.0f,  -1.0f, 0.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f, //
+      0.5f,  -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f, //
+      0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f, //
+      0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f, //
+      -0.5f, -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f, //
+      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f, //
 
-      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  -0.5f,
-      0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,
-      0.0f,  1.0f,  0.0f,  -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f};
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f, //
+      0.5f,  0.5f,  -0.5f, 0.0f,  1.0f,  0.0f, //
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //
+      -0.5f, 0.5f,  0.5f,  0.0f,  1.0f,  0.0f, //
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f  //
+  };
 
   // First, set the container's VAO (and VBO)
   GLuint VBO, VAO;
@@ -169,11 +186,13 @@ int main() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                   GL_NEAREST_MIPMAP_NEAREST);
 
-  image = stbi_load("Models/Texture_albedo.jpg", &textureWidth, &textureHeight,
-                    &nrChannels, 0);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB,
-               GL_UNSIGNED_BYTE, image);
-  glGenerateMipmap(GL_TEXTURE_2D);
+  image = stbi_load("Models/Perro/Texture_albedo.jpg", &textureWidth,
+                       &textureHeight, &nrChannels, 0);
+  // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0,
+  // GL_RGB,
+  //              GL_UNSIGNED_BYTE, image);
+  // glGenerateMipmap(GL_TEXTURE_2D);
+
   if (image) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0,
                  GL_RGB, GL_UNSIGNED_BYTE, image);
@@ -208,6 +227,12 @@ int main() {
                 camera.GetPosition().z);
 
     // Set lights properties
+    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"),
+                0.3f, 0.3f, 0.3f);
+    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"),
+                0.2f, 0.7f, 0.8f);
+    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"),
+                0.3f, 0.6f, 0.4f);
 
     glm::mat4 view = camera.GetViewMatrix();
     glUniformMatrix4fv(
@@ -217,6 +242,18 @@ int main() {
                        GL_FALSE, glm::value_ptr(view));
 
     // Set material properties
+    glUniform3f(
+        glGetUniformLocation(lightingShader.Program, "material.ambient"), 0.5f,
+        0.5f, 0.5f);
+    glUniform3f(
+        glGetUniformLocation(lightingShader.Program, "material.diffuse"), 0.7f,
+        0.2f, 0.4f);
+    glUniform3f(
+        glGetUniformLocation(lightingShader.Program, "material.specular"), 0.6f,
+        0.6f, 0.6f);
+    glUniform1f(
+        glGetUniformLocation(lightingShader.Program, "material.shininess"),
+        0.8f);
 
     // Draw the loaded model
     glm::mat4 model(1);
@@ -225,7 +262,41 @@ int main() {
                        GL_FALSE, glm::value_ptr(model));
     glBindVertexArray(VAO);
 
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    red_dog.Draw(lightingShader);
+    // glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    glUniform3f(lightPosLoc, -lightPos.x - movelightPos,
+                -lightPos.y - movelightPos, -lightPos.z - movelightPos);
+
+    // Set lights properties
+    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"),
+                0.2f, 0.2f, 0.8f);
+    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"),
+                0.2f, 0.7f, 0.8f);
+    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"),
+                0.2f, 0.2f, 0.2f);
+
+    // Set material properties
+    glUniform3f(
+        glGetUniformLocation(lightingShader.Program, "material.ambient"), 0.1f,
+        0.6f, 0.6f);
+    glUniform3f(
+        glGetUniformLocation(lightingShader.Program, "material.diffuse"), 0.1f,
+        0.2f, 0.4f);
+    glUniform3f(
+        glGetUniformLocation(lightingShader.Program, "material.specular"), 0.1f,
+        0.1f, 0.1f);
+    glUniform1f(
+        glGetUniformLocation(lightingShader.Program, "material.shininess"),
+        0.6f);
+
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, -1.6f, -0.3f));
+    model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+    glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1,
+                       GL_FALSE, glm::value_ptr(model));
+    glBindVertexArray(VAO);
+    pet_bed.Draw(lightingShader);
 
     glBindVertexArray(0);
 
@@ -234,6 +305,7 @@ int main() {
                        1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "view"), 1,
                        GL_FALSE, glm::value_ptr(view));
+
     model = glm::mat4(1.0f);
     model = glm::translate(model, lightPos + movelightPos);
     model = glm::scale(model, glm::vec3(0.3f));
@@ -241,6 +313,15 @@ int main() {
                        GL_FALSE, glm::value_ptr(model));
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, -lightPos - movelightPos);
+    model = glm::scale(model, glm::vec3(0.5f));
+    glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "model"), 1,
+                       GL_FALSE, glm::value_ptr(model));
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
     glBindVertexArray(0);
 
     // Swap the buffers
