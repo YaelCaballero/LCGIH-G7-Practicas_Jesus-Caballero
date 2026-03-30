@@ -1,12 +1,14 @@
 // Caballero Antunez Jesus Yael - 320231364
-// Previo #8: Materiales e Iluminación
-// 24 de marzo del 2026
+// Práctica #8: Materiales e Iluminación
+// 29 de marzo del 2026
 
 // Std. Includes
 #include <glm/ext/matrix_float4x4.hpp>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
-#include <string>
+#include <glm/trigonometric.hpp>
+#include <iostream>
+#include <ostream>
 
 // GLEW
 #include <GL/glew.h>
@@ -44,12 +46,46 @@ GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
 
 // Light attributes
-glm::vec3 lightPos(0.5f, 0.5f, 2.5f);
+glm::vec3 lightPos(0.0f, 3.0f, 0.0f);
 float movelightPos = 0.0f;
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 float rot = 0.0f;
 bool activanim = false;
+
+struct Material {
+  glm::vec3 ambient;
+  glm::vec3 diffuse;
+  glm::vec3 specular;
+  float shininess;
+};
+
+enum Modelo {
+  COUCH,
+  CUSHIONS,
+  PLANTS,
+  STOOL,
+  LAMP,
+  CARPET,
+  CHAIR,
+  BED,
+  DOG,
+  NUM_MODELOS
+};
+
+#define SET_MAT(m)                                                             \
+  glUniform3fv(                                                                \
+      glGetUniformLocation(lightingShader.Program, "material.ambient"), 1,     \
+      glm::value_ptr(mat[m].ambient));                                         \
+  glUniform3fv(                                                                \
+      glGetUniformLocation(lightingShader.Program, "material.diffuse"), 1,     \
+      glm::value_ptr(mat[m].diffuse));                                         \
+  glUniform3fv(                                                                \
+      glGetUniformLocation(lightingShader.Program, "material.specular"), 1,    \
+      glm::value_ptr(mat[m].specular));                                        \
+  glUniform1f(                                                                 \
+      glGetUniformLocation(lightingShader.Program, "material.shininess"),      \
+      mat[m].shininess);
 
 int main() {
   // Init GLFW
@@ -63,7 +99,7 @@ int main() {
 
   // Create a GLFWwindow object that we can use for GLFW's functions
   GLFWwindow *window = glfwCreateWindow(
-      WIDTH, HEIGHT, "Previo 8 Jesús Caballero", nullptr, nullptr);
+      WIDTH, HEIGHT, "Práctica 8 Jesús Caballero", nullptr, nullptr);
 
   if (nullptr == window) {
     std::cout << "Failed to create GLFW window" << std::endl;
@@ -105,8 +141,18 @@ int main() {
   Shader lightingShader("Shader/lighting.vs", "Shader/lighting.frag");
 
   // Load models
-  Model red_dog((char *)"Models/Perro/RedDog.obj");
-  Model pet_bed((char *)"Models/Cama/pet_bed.obj");
+  Model sun((char *)"Models/Sol/sol.obj");
+  Model moon((char *)"Models/Luna/luna.obj");
+  Model couch((char *)"Models/Sillon/sillon.obj");
+  Model cushions((char *)"Models/Sillon/cojines-1.obj");
+  Model plants((char *)"Models/Planta/planta.obj");
+  Model stool((char *)"Models/Banco/banco.obj");
+  Model lamp((char *)"Models/Lampara/lampara.obj");
+  Model carpet((char *)"Models/Tapete/tapete.obj");
+  Model bed((char *)"Models/Cama/pet_bed.obj");
+  Model dog((char *)"Models/Perro/RedDog.obj");
+  Model chair((char *)"Models/Silla/Eames_OBJ.obj");
+
   glm::mat4 projection = glm::perspective(
       camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f,
       100.0f);
@@ -186,21 +232,21 @@ int main() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                   GL_NEAREST_MIPMAP_NEAREST);
 
-  image = stbi_load("Models/Perro/Texture_albedo.jpg", &textureWidth,
-                       &textureHeight, &nrChannels, 0);
+  // image = stbi_load("Models/Perro/Texture_albedo.jpg", &textureWidth,
+  //                   &textureHeight, &nrChannels, 0);
   // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0,
   // GL_RGB,
   //              GL_UNSIGNED_BYTE, image);
   // glGenerateMipmap(GL_TEXTURE_2D);
 
-  if (image) {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0,
-                 GL_RGB, GL_UNSIGNED_BYTE, image);
-    glGenerateMipmap(GL_TEXTURE_2D);
-  } else {
-    std::cout << "Failed to load texture" << std::endl;
-  }
-  stbi_image_free(image);
+  // if (image) {
+  //   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureWidth, textureHeight, 0,
+  //                GL_RGB, GL_UNSIGNED_BYTE, image);
+  //   glGenerateMipmap(GL_TEXTURE_2D);
+  // } else {
+  //   std::cout << "Failed to load texture" << std::endl;
+  // }
+  // stbi_image_free(image);
 
   // Game loop
   while (!glfwWindowShouldClose(window)) {
@@ -221,18 +267,9 @@ int main() {
     GLint lightPosLoc =
         glGetUniformLocation(lightingShader.Program, "light.position");
     GLint viewPosLoc = glGetUniformLocation(lightingShader.Program, "viewPos");
-    glUniform3f(lightPosLoc, lightPos.x + movelightPos,
-                lightPos.y + movelightPos, lightPos.z + movelightPos);
+
     glUniform3f(viewPosLoc, camera.GetPosition().x, camera.GetPosition().y,
                 camera.GetPosition().z);
-
-    // Set lights properties
-    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"),
-                0.3f, 0.3f, 0.3f);
-    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"),
-                0.2f, 0.7f, 0.8f);
-    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"),
-                0.3f, 0.6f, 0.4f);
 
     glm::mat4 view = camera.GetViewMatrix();
     glUniformMatrix4fv(
@@ -241,62 +278,200 @@ int main() {
     glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "view"), 1,
                        GL_FALSE, glm::value_ptr(view));
 
-    // Set material properties
-    glUniform3f(
-        glGetUniformLocation(lightingShader.Program, "material.ambient"), 0.5f,
-        0.5f, 0.5f);
-    glUniform3f(
-        glGetUniformLocation(lightingShader.Program, "material.diffuse"), 0.7f,
-        0.2f, 0.4f);
-    glUniform3f(
-        glGetUniformLocation(lightingShader.Program, "material.specular"), 0.6f,
-        0.6f, 0.6f);
-    glUniform1f(
-        glGetUniformLocation(lightingShader.Program, "material.shininess"),
-        0.8f);
+    glm::mat4 model;
 
-    // Draw the loaded model
-    glm::mat4 model(1);
-    model = glm::scale(model, glm::vec3(3.0f, 3.0f, 3.0f));
+    Material mat[NUM_MODELOS];
+
+    if (((int)(abs(movelightPos) + 90) / 180) % 2 == 0) {
+      // Luz de Sol
+      glUniform3f(lightPosLoc, -lightPos.y * sin(glm::radians(movelightPos)),
+                  lightPos.y * cos(glm::radians(movelightPos)) + 0.5,
+                  lightPos.z);
+      glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"),
+                  0.45f, 0.40f, 0.30f);
+      glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"),
+                  0.95f, 0.85f, 0.65f);
+      glUniform3f(
+          glGetUniformLocation(lightingShader.Program, "light.specular"), 1.00f,
+          0.95f, 0.80f);
+
+      mat[COUCH] = {{0.40f, 0.35f, 0.30f},
+                    {0.70f, 0.60f, 0.50f},
+                    {0.10f, 0.10f, 0.10f},
+                    8.0f};
+
+      mat[CUSHIONS] = {{0.45f, 0.35f, 0.35f},
+                       {0.75f, 0.55f, 0.55f},
+                       {0.05f, 0.05f, 0.05f},
+                       4.0f};
+
+      mat[PLANTS] = {{0.50f, 0.50f, 0.50f},
+                     {0.80f, 0.80f, 0.80f},
+                     {0.05f, 0.05f, 0.05f},
+                     16.0f};
+
+      mat[STOOL] = {{0.35f, 0.25f, 0.15f},
+                    {0.60f, 0.45f, 0.25f},
+                    {0.15f, 0.10f, 0.08f},
+                    32.0f};
+
+      mat[LAMP] = {{0.30f, 0.30f, 0.30f},
+                   {0.50f, 0.50f, 0.50f},
+                   {0.80f, 0.80f, 0.80f},
+                   128.0f};
+
+      mat[CARPET] = {{0.35f, 0.25f, 0.20f},
+                     {0.60f, 0.45f, 0.35f},
+                     {0.05f, 0.04f, 0.03f},
+                     2.0f};
+
+      mat[CHAIR] = {{0.30f, 0.30f, 0.30f},
+                    {0.55f, 0.55f, 0.55f},
+                    {0.40f, 0.40f, 0.40f},
+                    64.0f};
+
+      mat[BED] = {{0.40f, 0.30f, 0.25f},
+                  {0.65f, 0.50f, 0.40f},
+                  {0.05f, 0.04f, 0.03f},
+                  4.0f};
+
+      mat[DOG] = {{0.40f, 0.25f, 0.20f},
+                  {0.70f, 0.40f, 0.30f},
+                  {0.08f, 0.06f, 0.05f},
+                  8.0f};
+
+    } else {
+      // Luz de Luna
+      glUniform3f(
+          lightPosLoc, -lightPos.y * sin(glm::radians(movelightPos + 180)),
+          lightPos.y * cos(glm::radians(movelightPos + 180)) + 0.5, lightPos.z);
+      glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"),
+                  0.15f, 0.15f, 0.22f);
+      glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"),
+                  0.30f, 0.32f, 0.50f);
+      glUniform3f(
+          glGetUniformLocation(lightingShader.Program, "light.specular"), 0.35f,
+          0.38f, 0.55f);
+
+      mat[COUCH] = {{0.30f, 0.28f, 0.35f},
+                    {0.50f, 0.46f, 0.55f},
+                    {0.05f, 0.05f, 0.08f},
+                    8.0f};
+
+      mat[CUSHIONS] = {{0.28f, 0.24f, 0.32f},
+                       {0.45f, 0.40f, 0.52f},
+                       {0.03f, 0.03f, 0.05f},
+                       4.0f};
+
+      mat[PLANTS] = {{0.30f, 0.30f, 0.35f},
+                     {0.45f, 0.45f, 0.52f},
+                     {0.02f, 0.02f, 0.04f},
+                     16.0f};
+
+      mat[STOOL] = {{0.22f, 0.20f, 0.25f},
+                    {0.38f, 0.34f, 0.42f},
+                    {0.08f, 0.06f, 0.10f},
+                    32.0f};
+
+      mat[LAMP] = {{0.25f, 0.25f, 0.35f},
+                   {0.35f, 0.35f, 0.50f},
+                   {0.60f, 0.60f, 0.80f},
+                   128.0f};
+
+      mat[CARPET] = {{0.20f, 0.18f, 0.24f},
+                     {0.35f, 0.30f, 0.40f},
+                     {0.02f, 0.02f, 0.03f},
+                     2.0f};
+
+      mat[CHAIR] = {{0.25f, 0.25f, 0.32f},
+                    {0.40f, 0.40f, 0.52f},
+                    {0.25f, 0.25f, 0.38f},
+                    64.0f};
+
+      mat[BED] = {{0.22f, 0.20f, 0.26f},
+                  {0.38f, 0.32f, 0.44f},
+                  {0.03f, 0.02f, 0.04f},
+                  4.0f};
+
+      mat[DOG] = {{0.22f, 0.18f, 0.20f},
+                  {0.38f, 0.28f, 0.32f},
+                  {0.05f, 0.04f, 0.05f},
+                  8.0f};
+    }
+
+    SET_MAT(COUCH);
+    model = glm::mat4(1);
     glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1,
                        GL_FALSE, glm::value_ptr(model));
-    glBindVertexArray(VAO);
+    couch.Draw(lightingShader);
 
-    red_dog.Draw(lightingShader);
-    // glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    glUniform3f(lightPosLoc, -lightPos.x - movelightPos,
-                -lightPos.y - movelightPos, -lightPos.z - movelightPos);
-
-    // Set lights properties
-    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.ambient"),
-                0.2f, 0.2f, 0.8f);
-    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.diffuse"),
-                0.2f, 0.7f, 0.8f);
-    glUniform3f(glGetUniformLocation(lightingShader.Program, "light.specular"),
-                0.2f, 0.2f, 0.2f);
-
-    // Set material properties
-    glUniform3f(
-        glGetUniformLocation(lightingShader.Program, "material.ambient"), 0.1f,
-        0.6f, 0.6f);
-    glUniform3f(
-        glGetUniformLocation(lightingShader.Program, "material.diffuse"), 0.1f,
-        0.2f, 0.4f);
-    glUniform3f(
-        glGetUniformLocation(lightingShader.Program, "material.specular"), 0.1f,
-        0.1f, 0.1f);
-    glUniform1f(
-        glGetUniformLocation(lightingShader.Program, "material.shininess"),
-        0.6f);
-
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, -1.6f, -0.3f));
-    model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
+    SET_MAT(CUSHIONS);
+    model = glm::mat4(1);
     glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1,
                        GL_FALSE, glm::value_ptr(model));
-    glBindVertexArray(VAO);
-    pet_bed.Draw(lightingShader);
+    cushions.Draw(lightingShader);
+
+    SET_MAT(PLANTS);
+    model = glm::mat4(1);
+    model = glm::translate(model, glm::vec3(1.8672f, 0.0f, 0.0f));
+    glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1,
+                       GL_FALSE, glm::value_ptr(model));
+    plants.Draw(lightingShader);
+
+    SET_MAT(STOOL);
+    model = glm::mat4(1);
+    model = glm::translate(model, glm::vec3(-1.691f, 0.0f, 0.0f));
+    glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1,
+                       GL_FALSE, glm::value_ptr(model));
+    stool.Draw(lightingShader);
+
+    SET_MAT(LAMP);
+    model = glm::mat4(1);
+    model = glm::translate(model, glm::vec3(-1.691f, 0.4597f, 0.023f));
+    model =
+        glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(-0.004f, -0.004f, -0.004f));
+    glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1,
+                       GL_FALSE, glm::value_ptr(model));
+    lamp.Draw(lightingShader);
+
+    SET_MAT(CARPET);
+    model = glm::mat4(1);
+    model = glm::translate(model, glm::vec3(0.1424f, 0.0f, 1.422f));
+    model =
+        glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(0.0007f, 0.0007f, 0.0007f));
+    glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1,
+                       GL_FALSE, glm::value_ptr(model));
+    carpet.Draw(lightingShader);
+
+    SET_MAT(CHAIR);
+    model = glm::mat4(1);
+    model = glm::translate(model, glm::vec3(-1.521f, 0.0f, 1.181f));
+    model =
+        glm::rotate(model, glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1,
+                       GL_FALSE, glm::value_ptr(model));
+    chair.Draw(lightingShader);
+
+    SET_MAT(BED);
+    model = glm::mat4(1);
+    model = glm::translate(model, glm::vec3(1.7091f, 0.0f, 1.188f));
+    model =
+        glm::rotate(model, glm::radians(43.74f), glm::vec3(0.0f, -1.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(0.029f, 0.029f, 0.029f));
+    glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1,
+                       GL_FALSE, glm::value_ptr(model));
+    bed.Draw(lightingShader);
+
+    SET_MAT(DOG);
+    model = glm::mat4(1);
+    model = glm::translate(model, glm::vec3(1.6744f, 0.5058f, 1.214f));
+    model =
+        glm::rotate(model, glm::radians(50.73f), glm::vec3(0.0f, -1.0f, 0.0f));
+    glUniformMatrix4fv(glGetUniformLocation(lightingShader.Program, "model"), 1,
+                       GL_FALSE, glm::value_ptr(model));
+    dog.Draw(lightingShader);
 
     glBindVertexArray(0);
 
@@ -306,21 +481,27 @@ int main() {
     glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "view"), 1,
                        GL_FALSE, glm::value_ptr(view));
 
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, lightPos + movelightPos);
-    model = glm::scale(model, glm::vec3(0.3f));
-    glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "model"), 1,
-                       GL_FALSE, glm::value_ptr(model));
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, -lightPos - movelightPos);
-    model = glm::scale(model, glm::vec3(0.5f));
-    glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "model"), 1,
-                       GL_FALSE, glm::value_ptr(model));
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    if (((int)(abs(movelightPos) + 90) / 180) % 2 == 0) {
+      model = glm::mat4(1.0f);
+      model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
+      model = glm::rotate(model, glm::radians(movelightPos),
+                          glm::vec3(0.0f, 0.0f, 1.0f));
+      model = glm::translate(model, lightPos);
+      model = glm::scale(model, glm::vec3(0.3f));
+      glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "model"), 1,
+                         GL_FALSE, glm::value_ptr(model));
+      sun.Draw(lampshader);
+    } else {
+      model = glm::mat4(1.0f);
+      model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0f));
+      model = glm::rotate(model, glm::radians(movelightPos),
+                          glm::vec3(0.0f, 0.0f, 1.0f));
+      model = glm::translate(model, -lightPos);
+      model = glm::scale(model, glm::vec3(0.2f));
+      glUniformMatrix4fv(glGetUniformLocation(lampshader.Program, "model"), 1,
+                         GL_FALSE, glm::value_ptr(model));
+      moon.Draw(lampshader);
+    }
 
     glBindVertexArray(0);
 
@@ -377,12 +558,12 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action,
 
   if (keys[GLFW_KEY_O]) {
 
-    movelightPos += 0.1f;
+    movelightPos = (int)(movelightPos + 1) % 360;
   }
 
   if (keys[GLFW_KEY_L]) {
 
-    movelightPos -= 0.1f;
+    movelightPos = (int)(movelightPos - 1) % 360;
   }
 }
 

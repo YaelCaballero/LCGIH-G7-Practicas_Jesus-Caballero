@@ -1,0 +1,12 @@
+# Blender 5.1.0 MTL File: 'Planets.blend'
+# www.blender.org
+
+newmtl Sun
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd Textures/2k_sun.jpg
+map_Ke Textures/2k_sun.jpg
