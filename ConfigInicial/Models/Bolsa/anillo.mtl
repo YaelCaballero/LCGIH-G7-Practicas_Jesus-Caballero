@@ -1,0 +1,14 @@
+# Blender 5.1.0 MTL File: 'None'
+# www.blender.org
+
+newmtl T_Bin.001
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Textures/SM_Bin_T_Bin_BaseColor.1001.png
+map_Ns Textures/SM_Bin_T_Bin_Roughness.1001.png
+map_refl Textures/SM_Bin_T_Bin_Metallic.1001.png
+map_Bump -bm 1.000000 Textures/SM_Bin_T_Bin_Normal.1001.png
