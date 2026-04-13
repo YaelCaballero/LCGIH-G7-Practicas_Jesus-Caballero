@@ -313,9 +313,9 @@ int main() {
     glUniform1f(glGetUniformLocation(lightingShader.Program,
                                      "spotLights[0].outerCutOff"),
                 glm::cos(glm::radians(30.0f)));
+
     // SpotLight
     // Pantalla
-
     glUniform3f(
         glGetUniformLocation(lightingShader.Program, "spotLights[1].position"),
         0.0f, 0.0f, 2.4f);
@@ -324,10 +324,10 @@ int main() {
         0.0f, 0.0f, -1.0f);
     glUniform3f(
         glGetUniformLocation(lightingShader.Program, "spotLights[1].ambient"),
-        0.02f, 0.05f, 0.08f); // tinte azul frío muy tenue
+        0.02f, 0.05f, 0.08f);
     glUniform3f(
         glGetUniformLocation(lightingShader.Program, "spotLights[1].diffuse"),
-        0.5f, 0.75f, 1.0f); // azul cielo dominante
+        0.5f, 0.75f, 1.0f);
     glUniform3f(
         glGetUniformLocation(lightingShader.Program, "spotLights[1].specular"),
         0.4f, 0.6f, 0.8f);
@@ -336,7 +336,7 @@ int main() {
         1.0f);
     glUniform1f(
         glGetUniformLocation(lightingShader.Program, "spotLights[1].linear"),
-        0.14f); // se desvanece en rango medio
+        0.14f);
     glUniform1f(
         glGetUniformLocation(lightingShader.Program, "spotLights[1].quadratic"),
         0.07f);
