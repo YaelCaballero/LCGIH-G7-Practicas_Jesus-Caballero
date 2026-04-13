@@ -1,0 +1,26 @@
+# Blender 5.1.0 MTL File: 'pantalla.blend'
+# www.blender.org
+
+newmtl Base1
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Textures/tv_Base1_BaseColor.png
+map_refl Textures/tv_Base1_Metallic.png
+map_Bump -bm 1.000000 /G:/3d/Infinit/3D Creators/Television Hisense/Textures/Base_normal.jpg
+
+newmtl Main1
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Textures/tv_Screen_Metallic.png
+map_refl Textures/tv_screen1_Metallic.png
+map_Bump -bm 1.000000 Textures/tv_Screen_Normal.png
