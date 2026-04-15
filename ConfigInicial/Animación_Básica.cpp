@@ -3,6 +3,10 @@
 // 14 de abril del 2026
 
 #include <cmath>
+#include <cstdio>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/vector_float3.hpp>
+#include <glm/geometric.hpp>
 #include <iostream>
 
 // GLEW
@@ -18,6 +22,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <ostream>
 
 // Load Models
 #include "SOIL2/SOIL2.h"
@@ -50,8 +55,12 @@ bool active;
 
 // Positions of the point lights
 glm::vec3 pointLightPositions[] = {
-    glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+    glm::vec3(0.0f, 2.0f, 0.0f), glm::vec3(0.0f, 2.0f, 0.0f),
     glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f)};
+
+// Ball position
+glm::vec3 ballPosition[] = {glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)};
+bool direction;
 
 float vertices[] = {
     -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.5f,  -0.5f, -0.5f,
@@ -312,8 +321,7 @@ int main() {
     Dog.Draw(lightingShader);
 
     model = glm::mat4(1);
-    model =
-      glm::rotate(model, glm::radians(rotBall), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::translate(model, ballPosition[0]);
     glEnable(GL_BLEND); // Avtiva la funcionalidad para trabajar el canal alfa
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -364,7 +372,8 @@ void DoMovement() {
 
   // Camera controls
   if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP]) {
-    camera.ProcessKeyboard(FORWARD, deltaTime); }
+    camera.ProcessKeyboard(FORWARD, deltaTime);
+  }
 
   if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN]) {
     camera.ProcessKeyboard(BACKWARD, deltaTime);
@@ -377,6 +386,8 @@ void DoMovement() {
   if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]) {
     camera.ProcessKeyboard(RIGHT, deltaTime);
   }
+
+  pointLightPositions[1] = pointLightPositions[0];
 
   if (keys[GLFW_KEY_T]) {
     pointLightPositions[0].x += 0.01f;
@@ -431,12 +442,27 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action,
 }
 
 void Animation() {
-  if (AnimBall) {
-    rotBall += 0.2f;
-    // printf("%f", rotBall);
-  } else {
-    // rotBall = 0.0f;
+  if (!AnimBall) {
+    return;
   }
+
+  if (glm::length(ballPosition[0] - ballPosition[1]) < 0.05) {
+    direction = true;
+  } else if (glm::length(pointLightPositions[0] - ballPosition[0]) < 0.05) {
+    direction = false;
+  }
+
+  glm::vec3 vector;
+
+  if (direction) {
+    vector = pointLightPositions[1] - ballPosition[0];
+  } else {
+    vector = ballPosition[1] - ballPosition[0];
+  }
+
+  vector = glm::normalize(vector);
+
+  ballPosition[0] += 0.005f * vector;
 }
 
 void MouseCallback(GLFWwindow *window, double xPos, double yPos) {
