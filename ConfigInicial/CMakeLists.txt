@@ -14,7 +14,7 @@ find_package(assimp REQUIRED)
 find_package(soil2 REQUIRED)
 
 add_executable(ConfigInicial
-    fuentesDeLuz.cpp
+    Animación_Básica.cpp
 )
 
 target_link_libraries(ConfigInicial
