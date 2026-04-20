@@ -1,12 +1,16 @@
 // Caballero Antunez Jesus Yael - 320231364
-// Previo #10: Animación Básica en OpenGL
-// 14 de abril del 2026
+// Práctica #10: Animación Básica en OpenGL
+// 19 de abril del 2026
 
 #include <cmath>
 #include <cstdio>
+#include <glm/common.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/quaternion_trigonometric.hpp>
+#include <glm/ext/scalar_constants.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/geometric.hpp>
+#include <glm/trigonometric.hpp>
 #include <iostream>
 
 // GLEW
@@ -59,8 +63,8 @@ glm::vec3 pointLightPositions[] = {
     glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f)};
 
 // Ball position
-glm::vec3 ballPosition[] = {glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)};
-bool direction;
+glm::vec3 ballPosition[] = {glm::vec3(0, 0, 1), glm::vec3(0, 0, 0)};
+float angle = -180;
 
 float vertices[] = {
     -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f, 0.5f,  -0.5f, -0.5f,
@@ -95,7 +99,7 @@ float vertices[] = {
 
 glm::vec3 Light1 = glm::vec3(0);
 // Anim
-float rotBall = 0;
+float rotBall = -1;
 bool AnimBall = false;
 
 // Deltatime
@@ -114,7 +118,7 @@ int main() {
 
   // Create a GLFWwindow object that we can use for GLFW's functions
   GLFWwindow *window = glfwCreateWindow(
-      WIDTH, HEIGHT, "Previo 10 Jesús Caballero", nullptr, nullptr);
+      WIDTH, HEIGHT, "Práctica 10 Jesús Caballero", nullptr, nullptr);
 
   if (nullptr == window) {
     std::cout << "Failed to create GLFW window" << std::endl;
@@ -151,9 +155,9 @@ int main() {
   Shader lampShader("Shader/lamp.vs", "Shader/lamp.frag");
 
   // models
-  Model Dog((char *)"Models/RedDog.obj");
-  Model Piso((char *)"Models/piso.obj");
-  Model Ball((char *)"Models/ball.obj");
+  Model Dog((char *)"Models/Perro/RedDog.obj");
+  Model Piso((char *)"Models/Piso/piso.obj");
+  Model Ball((char *)"Models/Pelota/ball.obj");
 
   // First, set the container's VAO (and VBO)
   GLuint VBO, VAO;
@@ -314,15 +318,45 @@ int main() {
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     Piso.Draw(lightingShader);
 
+    float radius = 2.0f;
+    float velocity = 2.0f;
+
+    // Perro
     model = glm::mat4(1);
+    model =
+        glm::rotate(model, glm::radians(rotBall), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::translate(model, glm::vec3(-radius, 0.0f, 0.0f));
+
+    float phase = velocity * glm::radians(rotBall);
+    float jumpVal = -cos(phase);
+
+    if (jumpVal >= 0.0f) {
+      float phaseMod = fmod(phase, 2.0f * glm::pi<float>());
+      if (phaseMod < 0)
+        phaseMod += 2.0f * glm::pi<float>();
+      float d = phaseMod - glm::pi<float>();
+
+      float t = float(cos(2.0f * d - glm::pi<float>() / 2.0f) *
+                      exp(-pow(d, 2) / 0.8f));
+
+      model = glm::translate(model, glm::vec3(0.0f, 0.5f * jumpVal, 0.0f));
+      model = glm::rotate(model, t, glm::vec3(1.0f, 0.0f, 0.0f));
+    }
+
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"),
                 0);
     Dog.Draw(lightingShader);
 
     model = glm::mat4(1);
-    model = glm::translate(model, ballPosition[0]);
-    glEnable(GL_BLEND); // Avtiva la funcionalidad para trabajar el canal alfa
+    model = glm::rotate(model, glm::radians(180.0f + rotBall),
+                        glm::vec3(0.0f, -1.0f, 0.0f));
+    model = glm::translate(
+        model, glm::vec3(-radius,
+                         1.5f + 0.5f * (-cos(velocity * glm::radians(rotBall) +
+                                             glm::pi<float>())),
+                         0.0f));
+    glEnable(GL_BLEND); // Activa la funcionalidad para trabajar el canal alfa
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"),
@@ -446,23 +480,7 @@ void Animation() {
     return;
   }
 
-  if (glm::length(ballPosition[0] - ballPosition[1]) < 0.05) {
-    direction = true;
-  } else if (glm::length(pointLightPositions[0] - ballPosition[0]) < 0.05) {
-    direction = false;
-  }
-
-  glm::vec3 vector;
-
-  if (direction) {
-    vector = pointLightPositions[1] - ballPosition[0];
-  } else {
-    vector = ballPosition[1] - ballPosition[0];
-  }
-
-  vector = glm::normalize(vector);
-
-  ballPosition[0] += 0.005f * vector;
+  rotBall += 1.0f;
 }
 
 void MouseCallback(GLFWwindow *window, double xPos, double yPos) {
