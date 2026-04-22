@@ -1,6 +1,6 @@
 
 
-newmtl Material__26
+newmtl Material__27
 	Ns 10.0000
 	Ni 1.5000
 	d 1.0000
@@ -11,5 +11,5 @@ newmtl Material__26
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka grass.jpg
-	map_Kd grass.jpg
+	map_Ka Texture_albedo.jpg
+	map_Kd Texture_albedo.jpg
