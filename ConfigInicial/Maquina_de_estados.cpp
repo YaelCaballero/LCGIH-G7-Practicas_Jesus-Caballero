@@ -1,10 +1,12 @@
 // Caballero Antunez Jesus Yael - 320231364
-// Previo #11: Animación con Máquina de Estados
-// 21 de abril del 2026
+// Práctica #11: Animación con Máquina de Estados
+// 26 de abril del 2026
 
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <fstream>
+#include <glm/ext/vector_float3.hpp>
 #include <iostream>
 
 // GLEW
@@ -93,12 +95,13 @@ bool AnimBall = false;
 bool AnimDog = false;
 float rotDog = 0.0f;
 int dogAnim = 0;
+bool vuelta = false;
+int angulo = 0;
 float FLegs = 0.0f;
 float RLegs = 0.0f;
 float head = 0.0f;
 float tail = 0.0f;
 glm::vec3 dogPos(0.0f, 0.0f, 0.0f);
-float dogRot = 0.0f;
 bool step = false;
 
 // Deltatime
@@ -117,7 +120,7 @@ int main() {
 
   // Create a GLFWwindow object that we can use for GLFW's functions
   GLFWwindow *window = glfwCreateWindow(
-      WIDTH, HEIGHT, "Previo 11 Jesús Caballero", nullptr, nullptr);
+      WIDTH, HEIGHT, "Práctica 11 Jesús Caballero", nullptr, nullptr);
 
   if (nullptr == window) {
     std::cout << "Failed to create GLFW window" << std::endl;
@@ -331,7 +334,7 @@ int main() {
     // Body
     modelTemp = model = glm::translate(model, dogPos);
     modelTemp = model =
-        glm::rotate(model, glm::radians(dogRot), glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::rotate(model, glm::radians(rotDog), glm::vec3(0.0f, 1.0f, 0.0f));
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     DogBody.Draw(lightingShader);
     // Head
@@ -460,7 +463,7 @@ void DoMovement() {
     pointLightPositions[0].y -= 0.01f;
   }
   if (keys[GLFW_KEY_U]) {
-    pointLightPositions[0].z -= 0.1f;
+    pointLightPositions[0].z -= 0.01f;
   }
   if (keys[GLFW_KEY_J]) {
     pointLightPositions[0].z += 0.01f;
@@ -496,7 +499,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action,
     AnimBall = !AnimBall;
   }
   if (keys[GLFW_KEY_B]) {
-    dogAnim = (dogAnim + 1) % 2;
+    AnimDog = !AnimDog;
   }
 }
 void Animation() {
@@ -505,37 +508,92 @@ void Animation() {
     // printf("%f", rotBall);
   }
 
-  if (AnimDog) {
-    rotDog -= 0.6f;
-    // printf("%f", rotBall);
+  if (!AnimDog) {
+    return;
   }
 
-  if (dogPos.z > 2.25 && abs(RLegs) <= 0.3) { // Stop
-    dogAnim = 0;
-  }
+  float desplazamiento = 0.02;
+  float ang_extremidades = 0.9;
+  float ang_vuelta = 0.7;
 
-  if (dogAnim == 1) { // Walk Animation
-    if (!step) {      // State 1
-      RLegs += 0.3f;
-      FLegs += 0.3f;
-      head += 0.3f;
-      tail += 0.3f;
+  if (!step) { // State 1
+    RLegs += ang_extremidades;
+    FLegs += ang_extremidades;
+    head += ang_extremidades;
+    tail += ang_extremidades;
 
-      if (RLegs > 15.0f) { // Condition
-        step = true;
-      }
-    } else { // State 2
-      RLegs -= 0.3f;
-      FLegs -= 0.3f;
-      head -= 0.3f;
-      tail -= 0.3f;
-
-      if (FLegs < -15.0f) { // Condition
-        step = false;
-      }
+    if (RLegs > 15.0f) { // Condition
+      step = true;
     }
+  } else { // State 2
+    RLegs -= ang_extremidades;
+    FLegs -= ang_extremidades;
+    head -= ang_extremidades;
+    tail -= ang_extremidades;
 
-    dogPos.z += 0.001;
+    if (FLegs < -15.0f) { // Condition
+      step = false;
+    }
+  }
+
+  if (vuelta) {
+    int op = copysign(1, angulo - rotDog);
+    rotDog += op * ang_vuelta;
+    if (op * rotDog >= op * angulo) {
+      rotDog = angulo;
+      vuelta = false;
+    }
+  } else {
+    switch (dogAnim) {
+    case 0:
+      dogPos.z += desplazamiento;
+      if (dogPos.z > 2.25f) {
+        angulo = 90;
+        vuelta = true;
+        dogAnim = 1;
+      }
+      break;
+
+    case 1:
+      dogPos.x += desplazamiento;
+      if (dogPos.x > 2.25f) {
+        angulo = 180;
+        vuelta = true;
+        dogAnim = 2;
+      }
+      break;
+
+    case 2:
+      dogPos.z -= desplazamiento;
+      if (dogPos.z < -2.25f) {
+        angulo = 270;
+        vuelta = true;
+        dogAnim = 3;
+      }
+      break;
+
+    case 3:
+      dogPos.x -= desplazamiento;
+      if (dogPos.x < -2.25f) {
+        angulo = 405;
+        vuelta = true;
+        dogAnim = 4;
+      }
+      break;
+
+    case 4:
+      dogPos.x += desplazamiento / sqrt(2);
+      dogPos.z += desplazamiento / sqrt(2);
+      if (abs(dogPos.x) < 0.01 && abs(dogPos.x) < 0.01) {
+        rotDog = fmod(rotDog, 360);
+        dogPos.x = 0.0f;
+        dogPos.z = 0.0f;
+        angulo = 0;
+        vuelta = true;
+        dogAnim = 0;
+      }
+      break;
+    }
   }
 }
 
