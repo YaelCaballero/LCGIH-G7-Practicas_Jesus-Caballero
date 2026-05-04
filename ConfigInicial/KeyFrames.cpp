@@ -1,8 +1,11 @@
 // Caballero Antunez Jesus Yael - 320231364
-// Previo #12: Animación de KeyFrames en OpenGL
-// 28 de abril del 2026
+// Práctica #12: Animación de KeyFrames en OpenGL
+// 3 de mayo del 2026
 
+#include <algorithm>
+#include <cctype>
 #include <cmath>
+#include <cstddef>
 #include <glm/ext/matrix_transform.hpp>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/geometric.hpp>
@@ -21,6 +24,15 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <iterator>
+#include <nlohmann/detail/macro_scope.hpp>
+#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
+
+#include <fstream>
+#include <ostream>
+#include <string>
+#include <vector>
 
 // Load Models
 #include "SOIL2/SOIL2.h"
@@ -29,6 +41,14 @@
 #include "Camera.h"
 #include "Model.h"
 #include "Shader.h"
+
+using json = nlohmann::json;
+
+#if defined(_WIN32)
+#define dir "Animations\\"
+#else
+#define dir "Animations/"
+#endif // defined (_WIN32)
 
 #define rot(v)                                                                 \
   model = glm::rotate(model, v[0], glm::vec3(1.0f, 0.0f, 0.0f));               \
@@ -53,6 +73,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action,
 void MouseCallback(GLFWwindow *window, double xPos, double yPos);
 void DoMovement();
 void Animation();
+void resetAnimation(bool hard = false);
 
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -67,6 +88,8 @@ bool firstMouse = true;
 // Light attributes
 glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
 bool active;
+bool saving;
+fstream animation;
 
 // Positions of the point lights
 glm::vec3 pointLightPositions[] = {
@@ -119,7 +142,7 @@ vector<float> bl_leg(3, 0);
 vector<float> br_leg(3, 0);
 
 // KeyFrames
-#define MAX_FRAMES 9
+#define MAX_FRAMES 100
 int i_max_steps = 190;
 int i_curr_steps = 0;
 typedef struct _frame {
@@ -143,6 +166,11 @@ typedef struct _frame {
   vector<float> bl_legInc;
   vector<float> br_legInc;
 } FRAME;
+
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(_frame, rotDog, posDog, head, tail, fl_leg,
+                                   fr_leg, bl_leg, br_leg, rotDogInc, posDogInc,
+                                   headInc, tailInc, fl_legInc, fr_legInc,
+                                   bl_legInc, br_legInc)
 
 FRAME KeyFrame[MAX_FRAMES];
 int FrameIndex = 0; // introducir datos
@@ -185,6 +213,22 @@ void interpolation(void) {
   interpol(br_leg, br_legInc);
 }
 
+void resetAnimation(bool hard) {
+  std::fill(std::begin(KeyFrame), std::end(KeyFrame), FRAME());
+  FrameIndex = 0;
+
+  if (hard) {
+    rotDog = vector<float>(3, 0);
+    posDog = vector<float>(3, 0);
+    head = vector<float>(3, 0);
+    tail = vector<float>(3, 0);
+    fl_leg = vector<float>(3, 0);
+    fr_leg = vector<float>(3, 0);
+    bl_leg = vector<float>(3, 0);
+    br_leg = vector<float>(3, 0);
+  }
+}
+
 // Deltatime
 GLfloat deltaTime = 0.0f; // Time between current frame and last frame
 GLfloat lastFrame = 0.0f; // Time of last frame
@@ -201,7 +245,7 @@ int main() {
 
   // Create a GLFWwindow object that we can use for GLFW's functions
   GLFWwindow *window = glfwCreateWindow(
-      WIDTH, HEIGHT, "Previo 12 Jesús Caballero", nullptr, nullptr);
+      WIDTH, HEIGHT, "Práctica 12 Jesús Caballero", nullptr, nullptr);
 
   if (nullptr == window) {
     std::cout << "Failed to create GLFW window" << std::endl;
@@ -491,18 +535,19 @@ int main() {
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
     B_RightLeg.Draw(lightingShader);
 
-    model = glm::mat4(1);
-    glEnable(GL_BLEND); // Avtiva la funcionalidad para trabajar el canal alfa
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"),
-                1);
-    model =
-        glm::rotate(model, glm::radians(rotBall), glm::vec3(0.0f, 1.0f, 0.0f));
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    Ball.Draw(lightingShader);
-    glDisable(GL_BLEND); // Desactiva el canal alfa
-    glBindVertexArray(0);
+    // model = glm::mat4(1);
+    // glEnable(GL_BLEND); // Avtiva la funcionalidad para trabajar el canal
+    // alfa glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    // glUniform1i(glGetUniformLocation(lightingShader.Program, "transparency"),
+    //             1);
+    // model =
+    //     glm::rotate(model, glm::radians(rotBall), glm::vec3(0.0f, 1.0f,
+    //     0.0f));
+    // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    // Ball.Draw(lightingShader);
+    // glDisable(GL_BLEND); // Desactiva el canal alfa
+    // glBindVertexArray(0);
 
     // Also draw the lamp object, again binding the appropriate shader
     lampShader.Use();
@@ -546,7 +591,6 @@ void DoMovement() {
   bool ctrl = keys[GLFW_KEY_LEFT_CONTROL] || keys[GLFW_KEY_RIGHT_CONTROL];
   float delta = ctrl ? -0.01f : 0.01f;
 
-  // ── Dog body rotation (rotDog) ── 1:X  2:Y  3:Z  (Ctrl = inverse)
   if (keys[GLFW_KEY_1])
     rotDog[0] += delta;
   if (keys[GLFW_KEY_2])
@@ -554,7 +598,6 @@ void DoMovement() {
   if (keys[GLFW_KEY_3])
     rotDog[2] += delta;
 
-  // ── Head rotation ────────────── 4:X  5:Y  6:Z  (Ctrl = inverse)
   if (keys[GLFW_KEY_4])
     head[0] += delta;
   if (keys[GLFW_KEY_5])
@@ -562,7 +605,6 @@ void DoMovement() {
   if (keys[GLFW_KEY_6])
     head[2] += delta;
 
-  // ── Tail rotation ────────────── 7:X  8:Y  9:Z  (Ctrl = inverse)
   if (keys[GLFW_KEY_7])
     tail[0] += delta;
   if (keys[GLFW_KEY_8])
@@ -570,7 +612,6 @@ void DoMovement() {
   if (keys[GLFW_KEY_9])
     tail[2] += delta;
 
-  // ── Front Left Leg rotation ──── Q:X  E:Y  R:Z  (Ctrl = inverse)
   if (keys[GLFW_KEY_E])
     fl_leg[0] += delta;
   if (keys[GLFW_KEY_R])
@@ -578,7 +619,6 @@ void DoMovement() {
   if (keys[GLFW_KEY_T])
     fl_leg[2] += delta;
 
-  // ── Front Right Leg rotation ─── T:X  Y:Y  U:Z  (Ctrl = inverse)
   if (keys[GLFW_KEY_U])
     fr_leg[0] += delta;
   if (keys[GLFW_KEY_I])
@@ -586,7 +626,6 @@ void DoMovement() {
   if (keys[GLFW_KEY_O])
     fr_leg[2] += delta;
 
-  // ── Back Left Leg rotation ───── F:X  G:Y  I:Z  (Ctrl = inverse)
   if (keys[GLFW_KEY_Z])
     bl_leg[0] += delta;
   if (keys[GLFW_KEY_X])
@@ -594,7 +633,6 @@ void DoMovement() {
   if (keys[GLFW_KEY_C])
     bl_leg[2] += delta;
 
-  // ── Back Right Leg rotation ──── V:X  B:Y  N:Z  (Ctrl = inverse)
   if (keys[GLFW_KEY_B])
     br_leg[0] += delta;
   if (keys[GLFW_KEY_N])
@@ -635,6 +673,59 @@ void DoMovement() {
 void KeyCallback(GLFWwindow *window, int key, int scancode, int action,
                  int mode) {
 
+  if (!animation.is_open() && keys[GLFW_KEY_Q]) {
+    string nombre;
+    std::cout << "Nombre de la animación a guardar: ";
+    std::cin >> nombre;
+    nombre.erase(std::remove_if(nombre.begin(), nombre.end(), ::isspace),
+                 nombre.end());
+
+    nombre = dir + nombre + ".json";
+
+    animation.open(nombre, ios::app);
+  } else if (animation.is_open() && keys[GLFW_KEY_Q]) {
+    std::cout << "Animación guardada" << std::endl;
+    animation.close();
+  }
+
+  if (keys[GLFW_KEY_P]) {
+    string nombre;
+    std::cout << "Nombre de la animación a leer: ";
+    std::cin >> nombre;
+    nombre.erase(std::remove_if(nombre.begin(), nombre.end(), ::isspace),
+                 nombre.end());
+
+    nombre = dir + nombre + ".json";
+
+    animation.open(nombre, ios::in);
+
+    if (!animation.is_open()) {
+      std::cout << "No se abrió el archivo a leer" << std::endl;
+      return;
+    }
+
+    resetAnimation();
+
+    string line;
+    string frame = "";
+
+    while (std::getline(animation, line)) {
+      frame += line;
+      if (line == "}") {
+        json j = json::parse(frame);
+        KeyFrame[FrameIndex++] = j.get<FRAME>();
+        frame = "";
+      }
+    }
+
+    std::cout << FrameIndex << std::endl;
+    animation.close();
+  }
+
+  if (keys[GLFW_KEY_F]) {
+    resetAnimation(true);
+  }
+
   if (keys[GLFW_KEY_L]) {
     if (play == false && (FrameIndex > 1)) {
 
@@ -653,10 +744,16 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action,
   if (keys[GLFW_KEY_K]) {
     if (FrameIndex < MAX_FRAMES) {
       saveFrame();
+      if (animation.is_open()) {
+        json j = KeyFrame[FrameIndex - 1];
+        animation << j.dump(4) << std::endl;
+      }
     }
   }
 
   if (GLFW_KEY_ESCAPE == key && GLFW_PRESS == action) {
+    if (animation.is_open())
+      animation.close();
     glfwSetWindowShouldClose(window, GL_TRUE);
   }
 
